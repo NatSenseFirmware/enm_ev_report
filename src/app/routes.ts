@@ -1,8 +1,8 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router";
 import { HomePage } from "./pages/HomePage";
 import { TakePhoto } from "./pages/TakePhoto";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     path: "/",
     Component: HomePage,
