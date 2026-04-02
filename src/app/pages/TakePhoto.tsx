@@ -23,6 +23,16 @@ const DB_NAME = "InspectionPhotoDB";
 const DB_VERSION = 1;
 const STORE_NAME = "photos";
 
+const resolveGuideImageUrl = (guideImagePath: string) => {
+  const prefix = "src/public/";
+  if (!guideImagePath.startsWith(prefix)) {
+    return guideImagePath;
+  }
+
+  const fileName = guideImagePath.slice(prefix.length);
+  return `${import.meta.env.BASE_URL}${fileName}`;
+};
+
 // Toggle to require all steps completion before export
 const REQUIRE_ALL_STEPS = false; // Set to true to require all steps to be completed
 
@@ -34,7 +44,7 @@ const PHOTO_STEPS = [
     folder: "session_7.2_EnergyConvSys",
     guidance:
       "拍攝能源轉換系統的銘牌或標籤，確保文字清晰",
-    guideImage: ""
+    guideImage: "src/public/converter_label.jpeg"
   },
   {
     id: 2,
@@ -42,12 +52,14 @@ const PHOTO_STEPS = [
     folder: "session_7.2_EnergyConvSys",
     guidance:
       "拍攝能源轉換系統的條碼和編號，確保文字清晰",
+    guideImage: "src/public/converter_barcode.jpeg"
   },
   {
     id: 3,
     name: "能源轉換系統 - 照片3",
     folder: "session_7.2_EnergyConvSys",
     guidance: "拍攝能源轉換系統的側面照片，展示連接點和接線情況",
+    guideImage: "src/public/converter_overall.jpeg"
   },
 
   // session_7.2_HVCable (photo 4)
@@ -57,6 +69,7 @@ const PHOTO_STEPS = [
     folder: "session_7.2_HVCable",
     guidance:
       "拍攝高壓電纜的整體布線情況，包括電纜路徑和固定方式",
+    guideImage: "src/public/hvcable.jpeg"
   },
 
   // session_7.2_HVConn (photos 5-7)
@@ -64,19 +77,22 @@ const PHOTO_STEPS = [
     id: 5,
     name: "高壓連接器 - 照片1",
     folder: "session_7.2_HVConn",
-    guidance: "拍攝高壓連接器的正面特寫，確保連接器型號清晰",
+    guidance: "拍攝高壓連接器的正面特寫，確保清晰展示連接器的連接狀態",
+    guideImage: "src/public/hv_conn_1.jpeg"
   },
   {
     id: 6,
     name: "高壓連接器 - 照片2",
     folder: "session_7.2_HVConn",
-    guidance: "拍攝高壓連接器的連接狀態，展示鎖定機構",
+    guidance: "拍攝高壓連接器的連接頭1特寫，確保清晰展示連接頭的狀態和標識",
+    guideImage: "src/public/hv_conn_2.jpeg"
   },
   {
     id: 7,
     name: "高壓連接器 - 照片3",
     folder: "session_7.2_HVConn",
-    guidance: "拍攝高壓連接器的背面或側面，展示密封情況",
+    guidance: "拍攝高壓連接器的連接頭2特寫，確保清晰展示連接頭的狀態和標識",
+    guideImage: "src/public/hv_conn_3.jpeg"
   },
 
   // session_7.2_HVTerminal (photos 8-10)
@@ -84,19 +100,22 @@ const PHOTO_STEPS = [
     id: 8,
     name: "高壓端子 - 照片1",
     folder: "session_7.2_HVTerminal",
-    guidance: "拍攝高壓端子的整體配置，包括正負極端子",
+    guidance: "拍攝高壓端子的頂部照片，展示端子本體和連接狀態",
+    guideImage: "src/public/hv_terminal_1.jpeg"
   },
   {
     id: 9,
     name: "高壓端子 - 照片2",
     folder: "session_7.2_HVTerminal",
-    guidance: "拍攝高壓端子的連接細節，確保螺栓扭矩標記可見",
+    guidance: "拍攝高壓端子的側面照片，展示端子連接情況",
+    guideImage: "src/public/hv_terminal_2.jpeg"
   },
   {
     id: 10,
     name: "高壓端子 - 照片3",
     folder: "session_7.2_HVTerminal",
-    guidance: "拍攝高壓端子的防護蓋或絕緣保護裝置",
+    guidance: "拍攝高壓端子和車頭蓋板的相對位置，展示端子布置和固定方式",
+    guideImage: "src/public/hv_terminal_3.jpeg"
   },
 
   // session_7.2_RESS (photos 11-13)
@@ -105,18 +124,21 @@ const PHOTO_STEPS = [
     name: "可充電儲能系統 - 照片1",
     folder: "session_7.2_RESS",
     guidance: "拍攝RESS的整體安裝位置和外觀",
+    guideImage: "src/public/RESS1.jpeg"
   },
   {
     id: 12,
     name: "可充電儲能系統 - 照片2",
     folder: "session_7.2_RESS",
     guidance: "拍攝RESS的銘牌，包括容量、電壓等規格信息",
+    guideImage: "src/public/RESS2.jpeg"
   },
   {
     id: 13,
     name: "可充電儲能系統 - 照片3",
     folder: "session_7.2_RESS",
     guidance: "拍攝RESS的主要連接點和安全裝置",
+    guideImage: "src/public/RESS3.jpeg"
   },
 
   // session_7.2_Trac_sys (photos 14-16)
@@ -124,169 +146,215 @@ const PHOTO_STEPS = [
     id: 14,
     name: "牽引系統 - 照片1",
     folder: "session_7.2_Trac_sys",
-    guidance: "拍攝牽引電機的整體外觀和安裝位置",
+    guidance: "拍攝驅動系統的整體外觀和安裝位置的電氣連接和冷卻系統",
+    guideImage: "src/public/trac1.jpeg"
   },
   {
     id: 15,
     name: "牽引系統 - 照片2",
     folder: "session_7.2_Trac_sys",
     guidance: "拍攝牽引系統的銘牌和型號信息",
+    guideImage: "src/public/trac2.jpeg"
   },
-  {
-    id: 16,
-    name: "牽引系統 - 照片3",
-    folder: "session_7.2_Trac_sys",
-    guidance: "拍攝牽引系統的電氣連接和冷卻系統",
-  },
+  // {
+  //   id: 16,
+  //   name: "牽引系統 - 照片3",
+  //   folder: "session_7.2_Trac_sys",
+  //   guidance: "拍攝牽引系統的銘牌和型號信息，必須清晰展示文字和標籤",
+  //   guideImage: "src/public/trac3.jpg"
+  // },
 
   // session_7.2_VehicleInlet (photos 17-18)
   {
     id: 17,
     name: "車輛插座 - 照片1",
     folder: "session_7.2_VehicleInlet",
-    guidance: "拍攝充電插座的外觀和位置，包括防護蓋",
+    guidance: "拍攝充電插座內部的插座結構和接點，確保清晰展示插座的類型和狀態",
+    guideImage: "src/public/vehicle_inlet1.jpeg"
   },
   {
     id: 18,
     name: "車輛插座 - 照片2",
     folder: "session_7.2_VehicleInlet",
-    guidance: "攝充電插座內部的接觸點和標識",
+    guidance: "拍攝充電插座的外觀和位置，包括防護蓋",
+    guideImage: "src/public/vehicle_inlet2.jpeg"
   },
 
   // session_7.4 (photos 19-40)
   {
     id: 19,
-    name: "絕緣電阻測試 - 照片1",
+    name: "車輛整體外觀-正面",
     folder: "session_7.4",
-    guidance: "拍攝測試儀器的整體設置，確保型號可見",
+    guidance: "拍攝車輛整體外觀的正面照片，展示車頭和前輪位置",
+    guideImage: "src/public/frontview.jpeg"
   },
   {
     id: 20,
-    name: "絕緣電阻測試 - 照片2",
+    name: "車輛整體外觀-背面",
     folder: "session_7.4",
-    guidance: "拍攝HV+正極測試連接點",
+    guidance: "拍攝車輛整體外觀的背面照片，展示車尾和後輪位置",
+    guideImage: "src/public/backview.jpeg"
   },
   {
     id: 21,
-    name: "絕緣電阻測試 - 照片3",
+    name: "車輛整體外觀-右側1",
     folder: "session_7.4",
-    guidance: "拍攝HV+正極測試讀數顯示",
+    guidance: "拍攝車輛整體外觀的右前方照片，展示車身側面和車輪位置",
+    guideImage: "src/public/right1.jpeg"
   },
   {
     id: 22,
-    name: "絕緣電阻測試 - 照片4",
+    name: "車輛整體外觀-右側2",
     folder: "session_7.4",
-    guidance: "拍攝HV-負極測試連接點",
+    guidance: "拍攝車輛整體外觀的右後方照片，展示車身側面和車輪位置",
+    guideImage: "src/public/right2.jpeg"
   },
   {
     id: 23,
-    name: "絕緣電阻測試 - 照片5",
+    name: "車輛整體外觀-左側1",
     folder: "session_7.4",
-    guidance: "拍攝HV-負極測試讀數顯示",
+    guidance: "拍攝車輛整體外觀的左前方照片，展示車身側面和車輪位置",
+    guideImage: "src/public/left1.jpeg"
   },
   {
     id: 24,
-    name: "絕緣電阻測試 - 照片6",
+    name: "車輛整體外觀-左側2",
     folder: "session_7.4",
-    guidance: "拍攝DC+正極測試連接點",
+    guidance: "拍攝車輛整體外觀的左後方照片，展示車身側面和車輪位置",
+    guideImage: "src/public/left2.jpeg"
   },
   {
     id: 25,
-    name: "絕緣電阻測試 - 照片7",
+    name: "車輛充電口外側防護蓋",
     folder: "session_7.4",
-    guidance: "拍攝DC+正極測試讀數顯示",
+    guidance: "拍攝車輛充電口的外側防護蓋，確保清晰展示防護蓋的狀態和位置",
+    guideImage: "src/public/coverlid.jpeg"
   },
   {
     id: 26,
-    name: "絕緣電阻測試 - 照片8",
+    name: "車輛充電口內部連接點AC DC插頭",
     folder: "session_7.4",
-    guidance: "拍攝DC-負極測試連接點",
+    guidance: "拍攝車輛充電口的內部連接點，確保清晰展示連接點的狀態和位置",//src/public/vehicle_inlet2.jpeg
+    guideImage: "src/public/vehicle_inlet1.jpeg"
   },
   {
     id: 27,
-    name: "絕緣電阻測試 - 照片9",
+    name: "車輛充電口內部防護蓋",
     folder: "session_7.4",
-    guidance: "拍攝DC-��極測試讀數顯示",
+    guidance: "拍攝車輛充電口的內部防護蓋，確保清晰展示防護蓋的狀態和位置",//src/public/vehicle_inlet2.jpeg
+    guideImage: "src/public/vehicle_inlet2.jpeg"
   },
   {
     id: 28,
-    name: "絕緣電阻測試 - 照片10",
+    name: "外接充電線連接器",
     folder: "session_7.4",
-    guidance: "拍攝AC L1相測試連接點",
+    guidance: "拍攝外接充電線的連接器，確保清晰展示連接器的狀態和位置",
+    guideImage: "src/public/extcharge.jpg"
   },
   {
     id: 29,
-    name: "絕緣電阻測試 - 照片11",
+    name: "外接充電線連接線",
     folder: "session_7.4",
-    guidance: "拍攝AC L1相測試讀數顯示",
+    guidance: "拍攝外接充電線的連接線，確保清晰展示連接線的狀態和位置",
+    guideImage: "src/public/wire.jpg"
   },
   {
     id: 30,
-    name: "絕緣電阻測試 - 照片12",
+    name: "外接充電線連接線插頭",
     folder: "session_7.4",
-    guidance: "拍攝AC L2相測試連接點",
+    guidance: "拍攝外接充電線的連接線插頭，確保清晰展示插頭的狀態和位置",
+    guideImage: "src/public/plug.jpg"
   },
   {
     id: 31,
-    name: "絕緣電阻測試 - 照片13",
+    name: "控制器（ICCB）",
     folder: "session_7.4",
-    guidance: "拍攝AC L2相測試讀數顯示",
+    guidance: "拍攝控制器（ICCB）的整體外觀，確保清晰展示控制器的狀態和位置",
+    guideImage: "src/public/iccb.jpg"
   },
   {
     id: 32,
-    name: "絕緣電阻測試 - 照片14",
+    name: "控制器（ICCB）標籤",
     folder: "session_7.4",
-    guidance: "拍攝AC L3相測試連接點",
+    guidance: "拍攝控制器（ICCB）的標籤，確保清晰展示標籤的狀態和信息",
+    guideImage: "src/public/iccb_label.png"
   },
   {
     id: 33,
-    name: "絕緣電阻測試 - 照片15",
+    name: "電動車底盤號碼",
     folder: "session_7.4",
-    guidance: "拍攝AC L3相測試讀數顯示",
+    guidance: "拍攝電動車底盤號碼，確保清晰展示底盤號碼的位置和狀態",
+    guideImage: "src/public/chassis_no.jpeg"
   },
   {
     id: 34,
-    name: "絕緣電阻測試 - 照片16",
+    name: "電動車底盤號碼標籤",
     folder: "session_7.4",
-    guidance: "拍攝AC N中性線測試連接點",
+    guidance: "拍攝電動車底盤號碼的標籤，確保清晰展示標籤的狀態和信息",
+    guideImage: "src/public/chassis_label.jpeg"
   },
   {
     id: 35,
-    name: "絕緣電阻測試 - 照17",
+    name: "電動車標籤信息",
     folder: "session_7.4",
-    guidance: "拍攝AC N中性線測試讀數顯示",
+    guidance: "拍攝電動車標籤信息，確保清晰展示標籤的狀態和信息",//ress2.jpeg
+    guideImage: "src/public/RESS2.jpeg"
   },
+  // {
+  //   id: 36,
+  //   name: "絕緣電阻測試 - 照片18",
+  //   folder: "session_7.4",
+  //   guidance: "拍攝測試環境溫度和濕度記錄",//none
+  // },
   {
     id: 36,
-    name: "絕緣電阻測試 - 照片18",
+    name: "電動車品牌商標",
     folder: "session_7.4",
-    guidance: "拍攝測試環境溫度和濕度記錄",
+    guidance: "拍攝電動車品牌商標，確保清晰展示商標",
+    guideImage: "src/public/logo.jpeg"
   },
   {
     id: 37,
-    name: "絕緣電阻測試 - 照片19",
+    name: "電動車車型",
     folder: "session_7.4",
-    guidance: "拍攝測試報告第一頁",
+    guidance: "拍攝電動車車型，確保清晰展示車型信息",
+    guideImage: "src/public/model.jpeg"
   },
-  {
-    id: 38,
-    name: "絕緣電阻測試 - 照片20",
-    folder: "session_7.4",
-    guidance: "拍攝測試報告第二頁",
-  },
-  {
-    id: 39,
-    name: "絕緣電阻測試 - 照片21",
-    folder: "session_7.4",
-    guidance: "拍攝測試儀器校準證書",
-  },
-  {
-    id: 40,
-    name: "絕緣電阻測試 - 照片22",
-    folder: "session_7.4",
-    guidance: "拍攝完整測試現場全景照片",
-  },
+  
 ];
+
+const GUIDE_IMAGE_URLS = Array.from(
+  new Set(PHOTO_STEPS.map((step) => resolveGuideImageUrl(step.guideImage))),
+);
+
+const SHARED_PHOTO_STEP_ID_PAIRS: Array<[number, number]> = [
+  [10, 3],
+  [5, 13],
+  [17, 26],
+  [18, 27],
+];
+
+const STEP_ID_TO_INDEX = PHOTO_STEPS.reduce<Record<number, number>>(
+  (acc, step, index) => {
+    acc[step.id] = index;
+    return acc;
+  },
+  {},
+);
+
+const SHARED_PHOTO_INDEX_MAP = SHARED_PHOTO_STEP_ID_PAIRS.reduce<
+  Record<number, number>
+>((acc, [stepIdA, stepIdB]) => {
+  const indexA = STEP_ID_TO_INDEX[stepIdA];
+  const indexB = STEP_ID_TO_INDEX[stepIdB];
+
+  if (indexA !== undefined && indexB !== undefined) {
+    acc[indexA] = indexB;
+    acc[indexB] = indexA;
+  }
+
+  return acc;
+}, {});
 
 const FIELDS = [
   "Nominal_Voltage",
@@ -306,12 +374,10 @@ const FIELDS = [
   "AC_L1_Rear",
   "AC_L2_Rear",
   "AC_L3_Rear",
-  "AC_N_Rear",
-  "Min_AC_R",
-  "Min_DC_R",
-  "Min_DC_R_Actual",
-  "Min_AC_R_Actual",
+  "AC_N_Rear"
 ];
+
+const GREATER_THAN_THRESHOLD_VALUE = ">5000000";
 
 type CaptureMode =
   | "sample"
@@ -394,6 +460,21 @@ export function TakePhoto() {
       if (dbRef.current) {
         dbRef.current.close();
       }
+    };
+  }, []);
+
+  // Preload guide images on initial load to reduce step switching latency.
+  useEffect(() => {
+    const preloadedImages = GUIDE_IMAGE_URLS.map((url) => {
+      const img = new window.Image();
+      img.src = url;
+      return img;
+    });
+
+    return () => {
+      preloadedImages.forEach((img) => {
+        img.src = "";
+      });
     };
   }, []);
 
@@ -510,12 +591,32 @@ export function TakePhoto() {
     event.target.value = "";
   };
 
-  const savePhoto = () => {
-    if (currentPhoto) {
-      setCapturedPhotos((prev) => ({
+  const saveCurrentPhotoToStep = () => {
+    if (!currentPhoto || !isPhotoStep) return;
+
+    setCapturedPhotos((prev) => {
+      const updatedPhotos = {
         ...prev,
         [currentStep]: currentPhoto,
-      }));
+      };
+
+      const pairedStep = SHARED_PHOTO_INDEX_MAP[currentStep];
+      const shouldCopyToPair =
+        pairedStep !== undefined &&
+        !prev[currentStep] &&
+        !prev[pairedStep];
+
+      if (shouldCopyToPair) {
+        updatedPhotos[pairedStep] = currentPhoto;
+      }
+
+      return updatedPhotos;
+    });
+  };
+
+  const savePhoto = () => {
+    if (currentPhoto) {
+      saveCurrentPhotoToStep();
       setCurrentPhoto(null);
       // Auto advance to next step
       if (currentStep < totalSteps - 1) {
@@ -572,6 +673,10 @@ export function TakePhoto() {
 
   const handleDataChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSetGreaterThanThreshold = (field: string) => {
+    handleDataChange(field, GREATER_THAN_THRESHOLD_VALUE);
   };
 
   const exportAll = async () => {
@@ -632,7 +737,11 @@ export function TakePhoto() {
     const fileName = `${chassisNumber}.zip`;
     a.download = fileName;
     a.click();
-    URL.revokeObjectURL(url);
+
+    window.setTimeout(() => {
+      URL.revokeObjectURL(url);
+      navigate("/");
+    }, 100);
   };
 
   const photoCompletedCount =
@@ -772,9 +881,9 @@ export function TakePhoto() {
                 </p>
                 <div className="aspect-video bg-white rounded-lg overflow-hidden border-2 border-blue-300 relative">
                   <img
-                    src={currentPhotoStep.guideImage}
+                    src={resolveGuideImageUrl(currentPhotoStep.guideImage)}
                     alt="拍攝範例"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-white"
                     onError={(e) => {
                       // Fallback if image doesn't exist
                       e.currentTarget.style.display = "none";
@@ -945,18 +1054,25 @@ export function TakePhoto() {
                         {field.replace(/_/g, " ")}
                       </label>
                     </div>
-                    <input
-                      type={field === "Chassis_Number" ? "text" : "number"}
-                      step={field === "Chassis_Number" ? undefined : "0.01"}
-                      value={formData[field] || ""}
-                      onChange={(e) =>
-                        handleDataChange(field, e.target.value)
-                      }
-                      placeholder={field === "Chassis_Number" ? "必填" : "0.00"}
-                      className={`w-28 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right ${
-                        field === "Chassis_Number" ? "border-red-300 bg-red-50" : "border-gray-300"
-                      }`}
-                    />
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => handleSetGreaterThanThreshold(field)}
+                        className="px-2 py-2 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
+                      >
+                        {GREATER_THAN_THRESHOLD_VALUE}
+                      </button>
+                      <input
+                        type="text"
+                        inputMode="decimal"
+                        value={formData[field] || ""}
+                        onChange={(e) =>
+                          handleDataChange(field, e.target.value)
+                        }
+                        placeholder="0.00"
+                        className="w-28 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-right border-gray-300"
+                      />
+                    </div>
                   </div>
                 ))}
               </div>
@@ -1121,10 +1237,7 @@ export function TakePhoto() {
           <button
             onClick={() => {
               if (isPhotoStep && currentPhoto) {
-                setCapturedPhotos((prev) => ({
-                  ...prev,
-                  [currentStep]: currentPhoto,
-                }));
+                saveCurrentPhotoToStep();
               }
               if (currentStep < totalSteps - 1) {
                 setCurrentStep(currentStep + 1);
